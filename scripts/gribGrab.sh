@@ -34,35 +34,35 @@ DATADIR=/Users/josephpicca/Desktop/newfrontier_2019/teleconnection-prices/natgas
 # Move to that directory to create files
 cd $DATADIR
 
-#for i in `seq 1 20`
-#	do
-#		PERT=$(printf "%02d" $i)
+for i in `seq 1 20`
+	do
+		PERT=$(printf "%02d" $i)
 
-#		echo $PERT
+		echo $PERT
 
-#		for j in `seq 12 24 372`
-#			do
+		for j in `seq 12 24 372`
+			do
 
-#				FTIME=$(printf "%02d" $j)
+				FTIME=$(printf "%02d" $j)
 
-#				echo $F_TIME
+				echo $F_TIME
 
-#				SUFFIX=$i-$j
+				SUFFIX=$i-$j
 
-#				URL="https://nomads.ncep.noaa.gov/cgi-bin/filter_gens.pl?file=gep"$PERT".t00z.pgrb2f"$FTIME"&lev_850_mb=on&var_TMP=on&subregion=&leftlon=260&rightlon=295&toplat=51&bottomlat=23&dir=%2Fgefs."$YEAR$MONTH$DAY"%2F00%2Fpgrb2"
+				URL="https://nomads.ncep.noaa.gov/cgi-bin/filter_gens.pl?file=gep"$PERT".t00z.pgrb2f"$FTIME"&lev_850_mb=on&var_TMP=on&subregion=&leftlon=260&rightlon=295&toplat=51&bottomlat=23&dir=%2Fgefs."$YEAR$MONTH$DAY"%2F00%2Fpgrb2"
 				#URL=$URL_ROOT"gep"$PERT".t00z.pgrb2f"$F_TIME"&lev_850_mb=on&var_TMP=on&subregion=&leftlon="$LLON"&rightlon="$RLON"&toplat="$TLAT"&bottomlat="$BLAT"&dir=2Fgefs."$YEAR$MONTH$DAY"%2F00%2Fpgrb2"
 
-#				echo $URL
+				echo $URL
 
-#				curl $URL -o $SUFFIX".grb"
+				curl $URL -o $SUFFIX".grb"
 
-#				echo "Waiting 10 seconds before next request"
+				echo "Waiting 10 seconds before next request"
 
-#				sleep 10s
+				sleep 10s
 
-#			done
+			done
 
-#	done
+	done
 
 # Get NatGas data
 
