@@ -59,7 +59,7 @@ body {
 
           numDays = 90
 
-          slicedData = data.slice(-(numDays+1),-1)
+          slicedData = data.slice(-(numDays),data.length)
 
           // Create the x domain by using the first date and the last date
           // However, we add 691200000 which is the number of ms in 8 days
