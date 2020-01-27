@@ -111,19 +111,19 @@ scaledVals = scaler.transform(fmatPred)
 
 # Load our xgBoost ls model
 
-model = load('gb_8jan2019.joblib')
+model = load('gb_mid50_8jan2019.joblib')
 
 middlePred = model.predict(scaledVals)
 
 # Load our xgBoost lower quantile model
 
-model = load('gb_lower_8jan2019.joblib')
+model = load('gb_low25_8jan2019.joblib')
 
 lowerPred = model.predict(scaledVals)
 
 # Load our xgBoost upper quantile model
 
-model = load('gb_upper_8jan2019.joblib')
+model = load('gb_up75_8jan2019.joblib')
 
 upperPred = model.predict(scaledVals)
 
@@ -131,7 +131,7 @@ upperPred = model.predict(scaledVals)
 # Save our predictions to another csv
 
 prediction = pd.DataFrame({'middle':middlePred,'upper':upperPred,'lower':lowerPred},index=[0])
-prediction.to_csv('../data/prediction/prediction.csv')
+prediction.to_csv('../data/prediction/prediction.csv',index=False)
 
 
 
