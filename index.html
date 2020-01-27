@@ -1,0 +1,172 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+
+  <title>Natural Gas Weekly Price Prediction</title>
+  <meta name="description" content="Natural Gas Price Prediction">
+  <meta name="author" content="Joey Picca">
+
+  <!--<link rel="stylesheet" href="css/styles.css?v=1.0">-->
+
+</head>
+
+<style>
+
+@font-face {
+  font-family: "tondo";
+  src: url("./assets/tondo.otf");
+}
+
+body {
+
+	font-family: tondo, sans-serif;
+
+}
+
+</style>
+
+<body>
+  <script src="//d3js.org/d3.v5.min.js"></script>
+  <script>
+
+    d3.select("body").append("svg");
+
+        var svg = d3.select("svg")
+          .attr("width",window.innerWidth)
+          .attr("height",3*(window.innerHeight/4)),
+            margin = {
+              top: 20,
+              right: 50,
+              bottom: 20,
+              left: 50
+            },
+              width = +svg.attr("width") - margin.left - margin.right,
+              height = +svg.attr("height") - margin.top - margin.bottom,
+              g = svg.append("g").attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+        // Create the x function for longitudinal placement on screen
+        var x = d3.scaleTime()
+          .range([0, width]);
+
+        var y = d3.scaleLinear()
+          .range([height, 0]);
+
+
+        d3.csv('./data/natgas/formattedprices.csv').then(function (data) {
+
+          //console.log(typeof(data.slice(-90,-1)[0]['Date']));
+
+          numDays = 90
+
+          slicedData = data.slice(-(numDays+1),-1)
+
+          // Create the x domain by using the first date and the last date
+          // However, we add 691200000 which is the number of ms in 8 days
+          x.domain([new Date(Date.parse(slicedData[0]['Date'])),
+            new Date(Date.parse(slicedData[numDays-1]['Date'])+691200000)])
+
+          y.domain(d3.extent(slicedData, function(d) {
+            return parseFloat(d['Price']);
+          }))
+
+          // console.log(y.domain())
+
+          g.append("g")
+            .attr("class", "x axis")
+            .attr("transform", "translate(0," + height + ")")
+            .call(d3.axisBottom(x));
+            //.call(g => g.select(".domain")
+            //.remove()); // Create an axis component with d3.axisBottom
+
+          g.append("g")
+            .attr("class", "y axis")
+            .attr("transform", "translate(0,0)")
+            .call(d3.axisLeft(y)
+              .tickSize(-width).ticks(6)
+              .tickFormat(d3.format("$.2f")))
+            .call(g => g.selectAll(".tick line")
+              .attr("stroke-opacity", 0.5)
+              .attr("stroke-dasharray", "2,2"));
+
+          svg.selectAll('.y.axis path.domain')
+            .remove();
+
+          var line = d3.line()
+            .x(function(d) { return x(new Date(Date.parse(d['Date'])))})
+            .y(function(d) { return y(parseFloat(d['Price'])); })
+            .curve(d3.curveMonotoneX);
+
+          g.append("path")
+            .datum(slicedData) // 10. Binds data to the line 
+            .attr("class", "line") // Assign a class for styling 
+            .attr("d", line)
+            .attr("fill","none")
+            .attr("stroke","black"); // 11. Calls the line generator 
+
+          d3.csv('./data/prediction/prediction.csv').then(function (data2) {
+
+            console.log(data2[0].upper)
+
+            /*var area = d3.area()
+                      .x0(x(new Date(Date.parse(slicedData[numDays-1]['Date']) + 172800000)))
+                      .x1(x(new Date(Date.parse(slicedData[numDays-1]['Date']) + 691200000)))
+                      .y0(function(d) { return y(d[0]) } )
+                      .y1(function(d) { return y(d[1]) } );
+            */
+
+            predData = [{'Day':new Date(Date.parse(slicedData[numDays-1]['Date']) + 172800000),
+                        'Lower':parseFloat(data2[0].lower),
+                        'Upper':parseFloat(data2[0].upper)},
+                        {'Day':new Date(Date.parse(slicedData[numDays-1]['Date']) + 691200000),
+                        'Lower':parseFloat(data2[0].lower),
+                        'Upper':parseFloat(data2[0].upper)}]
+
+            area = d3.area()
+                    .curve(d3.curveLinear)
+                    .x(d => x(d.Day))
+                    .y0(d => y(d.Lower))
+                    .y1(d => y(d.Upper))
+
+            g.append('path')
+              .datum(predData)
+              .attr('class', 'area')
+              .attr('fill', 'lightsteelblue')
+              .attr('opacity', 0.7)
+              //.call(area);
+              .attr('d', area);
+
+            g.append("text")
+              .attr("x", x(new Date(Date.parse(slicedData[numDays-1]['Date']) + 172800000)))
+              .attr("y", y(predData[0].Upper))
+              .style("font-size", "10px") 
+              .text("$" + predData[0].Upper.toPrecision(3))
+
+            g.append("text")
+              .attr("x", x(new Date(Date.parse(slicedData[numDays-1]['Date']) + 172800000)))
+              .attr("y", y(predData[0].Lower))
+              .style("font-size", "10px") 
+              .text("$" + predData[0].Lower.toPrecision(3))
+
+            g.append("text")
+              .attr("x", x(new Date(Date.parse(slicedData[numDays-1]['Date']) + 172800000)))
+              .attr("y", y((predData[0].Lower + predData[0].Upper)/2))
+              .style("font-size", "10px") 
+              .text("Exp Range")
+
+          })
+
+        g.append("text")
+          .attr("x", 0)             
+          .attr("y", margin.top/2)
+          .attr("text-anchor", "left")  
+          .style("font-size", "16px")  
+          .style("font-weight", "bold")
+          .text("Henry Hub NatGas Spot Prices & Next Week's Prediction");
+
+        });
+
+
+  </script>
+</body>
+</html>
