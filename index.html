@@ -13,24 +13,28 @@
 
 <style>
 
-@font-face {
-  font-family: "tondo";
-  src: url("./assets/tondo.otf");
-}
+  @font-face {
+    font-family: "tondo";
+    src: url("./assets/tondo.otf");
+  }
 
-body {
+  body {
 
-	font-family: tondo, sans-serif;
+  	font-family: tondo, sans-serif;
 
-}
+  }
 
 </style>
 
 <body>
+
   <script src="//d3js.org/d3.v5.min.js"></script>
+
+  <svg xmlns="http://www.w3.org/2000/svg"> </svg>
+
   <script>
 
-    d3.select("body").append("svg");
+    //d3.select("body").append("svg");
 
         var svg = d3.select("svg")
           .attr("width",window.innerWidth)
@@ -63,14 +67,18 @@ body {
 
           // Create the x domain by using the first date and the last date
           // However, we add 691200000 which is the number of ms in 8 days
-          x.domain([new Date(Date.parse(slicedData[0]['Date'])),
-            new Date(Date.parse(slicedData[numDays-1]['Date'])+691200000)])
+          x.domain([new Date(Date.parse(String(slicedData[0]['Date']).split(" ")[0])+21600000),
+              new Date(Date.parse(String(slicedData[numDays-1]['Date']).split(" ")[0])+691200000)])
+
+          //x.domain([new Date(Date.parse(slicedData[0]['Date'])),
+          //  new Date(Date.parse(slicedData[numDays-1]['Date'])+691200000)])
 
           y.domain(d3.extent(slicedData, function(d) {
             return parseFloat(d['Price']);
           }))
 
-          // console.log(y.domain())
+          //console.log(String(slicedData[0]['Date']).split(" ")[0])
+          //console.log(new Date('2014-05-06'))
 
           g.append("g")
             .attr("class", "x axis")
@@ -93,7 +101,8 @@ body {
             .remove();
 
           var line = d3.line()
-            .x(function(d) { return x(new Date(Date.parse(d['Date'])))})
+            //.x(function(d) { return })
+            .x(function(d) { return x(new Date(Date.parse(String(d['Date']).split(" ")[0]) + 21600000))})
             .y(function(d) { return y(parseFloat(d['Price'])); })
             .curve(d3.curveMonotoneX);
 
@@ -106,7 +115,7 @@ body {
 
           d3.csv('./data/prediction/prediction.csv').then(function (data2) {
 
-            console.log(data2[0].upper)
+            //console.log(data2[0].upper)
 
             /*var area = d3.area()
                       .x0(x(new Date(Date.parse(slicedData[numDays-1]['Date']) + 172800000)))
@@ -115,10 +124,10 @@ body {
                       .y1(function(d) { return y(d[1]) } );
             */
 
-            predData = [{'Day':new Date(Date.parse(slicedData[numDays-1]['Date']) + 172800000),
+            predData = [{'Day':new Date(Date.parse(String(slicedData[numDays-1]['Date']).split(" ")[0]) + 172800000),
                         'Lower':parseFloat(data2[0].lower),
                         'Upper':parseFloat(data2[0].upper)},
-                        {'Day':new Date(Date.parse(slicedData[numDays-1]['Date']) + 691200000),
+                        {'Day':new Date(Date.parse(String(slicedData[numDays-1]['Date']).split(" ")[0]) + 691200000),
                         'Lower':parseFloat(data2[0].lower),
                         'Upper':parseFloat(data2[0].upper)}]
 
@@ -137,19 +146,19 @@ body {
               .attr('d', area);
 
             g.append("text")
-              .attr("x", x(new Date(Date.parse(slicedData[numDays-1]['Date']) + 172800000)))
+              .attr("x", x(new Date(Date.parse(String(slicedData[numDays-1]['Date']).split(" ")[0]) + 172800000)))
               .attr("y", y(predData[0].Upper))
               .style("font-size", "10px") 
               .text("$" + predData[0].Upper.toPrecision(3))
 
             g.append("text")
-              .attr("x", x(new Date(Date.parse(slicedData[numDays-1]['Date']) + 172800000)))
+              .attr("x", x(new Date(Date.parse(String(slicedData[numDays-1]['Date']).split(" ")[0]) + 172800000)))
               .attr("y", y(predData[0].Lower))
               .style("font-size", "10px") 
               .text("$" + predData[0].Lower.toPrecision(3))
 
             g.append("text")
-              .attr("x", x(new Date(Date.parse(slicedData[numDays-1]['Date']) + 172800000)))
+              .attr("x", x(new Date(Date.parse(String(slicedData[numDays-1]['Date']).split(" ")[0]) + 172800000)))
               .attr("y", y((predData[0].Lower + predData[0].Upper)/2))
               .style("font-size", "10px") 
               .text("Exp Range")
