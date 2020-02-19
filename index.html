@@ -131,6 +131,7 @@
                         'Lower':parseFloat(data2[0].lower),
                         'Upper':parseFloat(data2[0].upper)}]
 
+
             area = d3.area()
                     .curve(d3.curveLinear)
                     .x(d => x(d.Day))
@@ -144,6 +145,11 @@
               .attr('opacity', 0.7)
               //.call(area);
               .attr('d', area);
+
+            g.append('circle')
+              .attr("cx", x(new Date(Date.parse(String(slicedData[numDays-1]['Date']).split(" ")[0]) + 432000000)))
+              .attr("cy", y(parseFloat(data2[0].middle)))
+              .attr("r",10)
 
             g.append("text")
               .attr("x", x(new Date(Date.parse(String(slicedData[numDays-1]['Date']).split(" ")[0]) + 172800000)))
@@ -159,9 +165,23 @@
 
             g.append("text")
               .attr("x", x(new Date(Date.parse(String(slicedData[numDays-1]['Date']).split(" ")[0]) + 172800000)))
-              .attr("y", y((predData[0].Lower + predData[0].Upper)/2))
+              .attr("y", y((predData[0].Lower + 4*predData[0].Upper)/5))
               .style("font-size", "10px") 
-              .text("Exp Range")
+              .text("95% Range")
+
+            g.append("text")
+              .attr("x", x(new Date(Date.parse(String(slicedData[numDays-1]['Date']).split(" ")[0]) + 432000000)))
+              .attr("y", y(parseFloat(data2[0].middle))-20)
+              .attr("text-anchor","middle")
+              .style("font-size", "10px") 
+              .text("Prediction")
+
+            g.append("text")
+              .attr("x", x(new Date(Date.parse(String(slicedData[numDays-1]['Date']).split(" ")[0]) + 432000000)))
+              .attr("y", y(parseFloat(data2[0].middle))+20)
+              .attr("text-anchor","middle")
+              .style("font-size", "10px") 
+              .text("$" + parseFloat(data2[0].middle).toPrecision(3))
 
           })
 
