@@ -14,4 +14,4 @@ Once all data are downloaded, outputData.py runs to process these data into suit
 ### Front End
 Version 5 of d3js is utilized to visualize the historical data (over the last 90 days) and plot the forecast range for next week's values. See the live version here: [Natural Gas Price Prediction](http://untoldsky.com/natGasPrediction/)
 
-![Front End Example](https://github.com/jpicca/natGasPrediction/blob/master/Screenshot%202020-01-28%2011.58.09.png)
+![Front End Example](https://github.com/jpicca/natGasPrediction/blob/master/Screenshot%202020-02-19%2016.33.34.png)
